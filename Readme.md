@@ -1,11 +1,11 @@
 ### FEBS Cloud 微服务权限系统
 ![https://img.shields.io/badge/license-Apache%202.0-blue.svg?longCache=true&style=flat-square](https://img.shields.io/badge/license-Apache%202.0-blue.svg?longCache=true&style=flat-square)
-![https://img.shields.io/badge/springcloud-Greenwich.SR3-yellow.svg?style=flat-square](https://img.shields.io/badge/springcloud-Greenwich.SR3-yellow.svg?style=flat-square)
-![https://img.shields.io/badge/SpringCloudAlibaba-0.9.0.RELEASE-blueviolet.svg?style=flat-square](https://img.shields.io/badge/SpringCloudAlibaba-0.9.0.RELEASE-blueviolet.svg?style=flat-square)
-![https://img.shields.io/badge/springboot-2.1.8.RELEASE-brightgreen.svg?style=flat-square](https://img.shields.io/badge/springboot-2.1.8.RELEASE-brightgreen.svg?style=flat-square)
+![https://img.shields.io/badge/springcloud-Hoxton.RELEASE-yellow.svg?style=flat-square](https://img.shields.io/badge/springcloud-Hoxton.RELEASE-yellow.svg?style=flat-square)
+![https://img.shields.io/badge/SpringCloudAlibaba-2.1.1.RELEASE-blueviolet.svg?style=flat-square](https://img.shields.io/badge/SpringCloudAlibaba-2.1.1.RELEASE-blueviolet.svg?style=flat-square)
+![https://img.shields.io/badge/springboot-2.2.0.RELEASE-brightgreen.svg?style=flat-square](https://img.shields.io/badge/springboot-2.2.0.RELEASE-brightgreen.svg?style=flat-square)
 ![https://img.shields.io/badge/vue-2.6.10-orange.svg?style=flat-square](https://img.shields.io/badge/vue-2.6.10-orange.svg?style=flat-square)
 
-FEBS Cloud是一款使用Spring Cloud Greenwich.SR3、Spring Cloud OAuth2 & Spring Cloud Alibaba构建的低耦合权限管理系统，前端（FEBS Cloud Web）采用vue element admin构建。FEBS意指：**F**ast，**E**asy use，**B**eautiful和**S**afe。该系统具有如下特点：
+FEBS Cloud是一款使用Spring Cloud Hoxton.RELEASE、Spring Cloud OAuth2 & Spring Cloud Alibaba构建的低耦合权限管理系统，前端（FEBS Cloud Web）采用vue element admin构建。FEBS意指：**F**ast，**E**asy use，**B**eautiful和**S**afe。该系统具有如下特点：
 
 1. 前后端分离架构，客户端和服务端纯Token交互；
  
@@ -25,13 +25,19 @@ FEBS Cloud是一款使用Spring Cloud Greenwich.SR3、Spring Cloud OAuth2 & Spri
 
 9. 微服务Docker化，使用Docker Compose一键部署；
 
-10. 提供详细的使用文档和搭建教程；
+10. 支持Kubernetes集群部署；
 
-11. 前后端请求参数校验，Excel导入导出，代码生成等。
+11. 提供详细的使用文档和搭建教程；
+
+12. 前后端请求参数校验，Excel导入导出，代码生成等。
 
 ### 文档与教程
 
-项目文档及**手摸手搭建教程**地址：[https://www.kancloud.cn/mrbird/spring-cloud/1263679](https://www.kancloud.cn/mrbird/spring-cloud/1263679)
+项目导入及使用文档：[https://www.kancloud.cn/mrbird/spring-cloud/1263681](https://www.kancloud.cn/mrbird/spring-cloud/1263681)。
+
+项目从零搭建到部署教程：[https://www.kancloud.cn/mrbird/spring-cloud/1263685](https://www.kancloud.cn/mrbird/spring-cloud/1263685)。
+
+Kubernetes集群部署脚本：[https://github.com/wuyouzhuguli/FEBS-Cloud-K8S](https://github.com/wuyouzhuguli/FEBS-Cloud-K8S)。
 
 ### 更新日志
 
@@ -69,13 +75,15 @@ Gitee  | [https://gitee.com/mrbirdd/FEBS-Cloud](https://gitee.com/mrbirdd/FEBS-C
 
 ### 演示地址
 
-演示地址（服务器资源有限，没有搭建ELK）：[https://cloud.mrbird.cn](https://cloud.mrbird.cn)
+演示地址：[https://cloud.mrbird.cn](https://cloud.mrbird.cn)
 
 演示环境账号密码：
 
 账号 | 密码| 权限
 ---|---|---
 scott | 1234qwer | 注册账户，拥有查看权限
+
+Grafana账号密码：febs，123456
 
 本地部署账号密码：
 

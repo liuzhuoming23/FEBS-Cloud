@@ -73,7 +73,7 @@ public class SocialLoginServiceImpl implements SocialLoginService {
     public FebsResponse resolveBind(String oauthType, AuthCallback callback) throws FebsException {
         FebsResponse febsResponse = new FebsResponse();
         AuthRequest authRequest = factory.get(getAuthSource(oauthType));
-        AuthResponse response = authRequest.login(resolveAuthCallback(callback));
+        AuthResponse<?> response = authRequest.login(resolveAuthCallback(callback));
         if (response.ok()) {
             febsResponse.data(response.getData());
         } else {
@@ -86,7 +86,7 @@ public class SocialLoginServiceImpl implements SocialLoginService {
     public FebsResponse resolveLogin(String oauthType, AuthCallback callback) throws FebsException {
         FebsResponse febsResponse = new FebsResponse();
         AuthRequest authRequest = factory.get(getAuthSource(oauthType));
-        AuthResponse response = authRequest.login(resolveAuthCallback(callback));
+        AuthResponse<?> response = authRequest.login(resolveAuthCallback(callback));
         if (response.ok()) {
             AuthUser authUser = (AuthUser) response.getData();
             UserConnection userConnection = userConnectionService.selectByCondition(authUser.getSource().toString(), authUser.getUuid());
@@ -151,7 +151,7 @@ public class SocialLoginServiceImpl implements SocialLoginService {
         if (isCurrentUser(username)) {
             this.userConnectionService.deleteByCondition(username, oauthType);
         } else {
-            throw new FebsException("绑定失败，您无权解绑别人的账号");
+            throw new FebsException("解绑失败，您无权解绑别人的账号");
         }
     }
 
