@@ -39,6 +39,8 @@ FEBS Cloud是一款使用Spring Cloud Hoxton.RELEASE、Spring Cloud OAuth2 & Spr
 
 Kubernetes集群部署脚本：[https://github.com/wuyouzhuguli/FEBS-Cloud-K8S](https://github.com/wuyouzhuguli/FEBS-Cloud-K8S)。
 
+分布式事务方案（RocketMQ、TX-LCN、Seata）：[https://www.kancloud.cn/mrbird/spring-cloud/1456142](https://www.kancloud.cn/mrbird/spring-cloud/1456142)。
+
 ### 更新日志
 
 [https://www.kancloud.cn/mrbird/spring-cloud/1292659](https://www.kancloud.cn/mrbird/spring-cloud/1292659)
@@ -64,6 +66,12 @@ Kubernetes集群部署脚本：[https://github.com/wuyouzhuguli/FEBS-Cloud-K8S](
   <tr>
     <td align="center" style="background: #fff"><img src="images/skywalking_apm.png"/></td>
   </tr>
+   <tr>
+    <td align="center" style="background: #fff"><b>FEBS Kubernetes</b></td>
+  </tr>
+  <tr>
+    <td align="center" style="background: #fff"><img src="images/febs-k8s.png"/></td>
+  </tr>
 </table>
 
 ### 项目地址
@@ -82,8 +90,6 @@ Gitee  | [https://gitee.com/mrbirdd/FEBS-Cloud](https://gitee.com/mrbirdd/FEBS-C
 账号 | 密码| 权限
 ---|---|---
 scott | 1234qwer | 注册账户，拥有查看权限
-
-Grafana账号密码：febs，123456
 
 本地部署账号密码：
 
@@ -163,7 +169,9 @@ Skywalking|11800、12800、8080|Skywalking APM
 
 ### 服务APM
 
-#### Prometheus APM
+#### [Prometheus APM](http://cloud.mrbird.cn:8404)
+
+Grafana账号密码：febs，123456
 
 <table>
   <tr>
@@ -192,7 +200,7 @@ Skywalking|11800、12800、8080|Skywalking APM
   </tr>
 </table>
 
-### Skywalking APM
+#### [Skywalking APM](http://123.206.206.203:8080/)
 
 <table>
   <tr>
