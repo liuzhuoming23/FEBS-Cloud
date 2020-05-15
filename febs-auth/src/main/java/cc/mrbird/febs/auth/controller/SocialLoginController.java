@@ -3,16 +3,17 @@ package cc.mrbird.febs.auth.controller;
 import cc.mrbird.febs.auth.entity.BindUser;
 import cc.mrbird.febs.auth.entity.UserConnection;
 import cc.mrbird.febs.auth.service.SocialLoginService;
-import cc.mrbird.febs.common.entity.FebsResponse;
-import cc.mrbird.febs.common.exception.FebsException;
-import cc.mrbird.febs.common.utils.FebsUtil;
+import cc.mrbird.febs.common.core.entity.FebsResponse;
+import cc.mrbird.febs.common.core.entity.constant.StringConstant;
+import cc.mrbird.febs.common.core.exception.FebsException;
+import cc.mrbird.febs.common.core.utils.FebsUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.zhyd.oauth.model.AuthCallback;
 import me.zhyd.oauth.model.AuthUser;
 import me.zhyd.oauth.request.AuthRequest;
 import me.zhyd.oauth.utils.AuthStateUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.stereotype.Controller;
@@ -30,16 +31,17 @@ import java.util.List;
  */
 @Slf4j
 @Controller
+@RequiredArgsConstructor
 @RequestMapping("social")
 public class SocialLoginController {
 
     private static final String TYPE_LOGIN = "login";
     private static final String TYPE_BIND = "bind";
 
-    @Autowired
-    private SocialLoginService socialLoginService;
+    private final SocialLoginService socialLoginService;
     @Value("${febs.frontUrl}")
     private String frontUrl;
+
 
     /**
      * 登录
@@ -51,7 +53,7 @@ public class SocialLoginController {
     @GetMapping("/login/{oauthType}/{type}")
     public void renderAuth(@PathVariable String oauthType, @PathVariable String type, HttpServletResponse response) throws IOException, FebsException {
         AuthRequest authRequest = socialLoginService.renderAuth(oauthType);
-        response.sendRedirect(authRequest.authorize(oauthType + "::" + AuthStateUtils.createState()) + "::" + type);
+        response.sendRedirect(authRequest.authorize(oauthType + StringConstant.DOUBLE_COLON + AuthStateUtils.createState()) + "::" + type);
     }
 
     /**
@@ -65,7 +67,7 @@ public class SocialLoginController {
     public String login(@PathVariable String oauthType, AuthCallback callback, String state, Model model) {
         try {
             FebsResponse febsResponse = null;
-            String type = StringUtils.substringAfterLast(state, "::");
+            String type = StringUtils.substringAfterLast(state, StringConstant.DOUBLE_COLON);
             if (StringUtils.equals(type, TYPE_BIND)) {
                 febsResponse = socialLoginService.resolveBind(oauthType, callback);
             } else {
@@ -77,7 +79,7 @@ public class SocialLoginController {
         } catch (Exception e) {
             String errorMessage = FebsUtil.containChinese(e.getMessage()) ? e.getMessage() : "第三方登录失败";
             model.addAttribute("error", e.getMessage());
-            return "error";
+            return "fail";
         }
     }
 

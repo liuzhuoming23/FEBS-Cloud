@@ -1,15 +1,15 @@
 package cc.mrbird.febs.server.system.controller;
 
-import cc.mrbird.febs.common.annotation.ControllerEndpoint;
-import cc.mrbird.febs.common.entity.FebsResponse;
-import cc.mrbird.febs.common.entity.QueryRequest;
-import cc.mrbird.febs.common.entity.system.Role;
-import cc.mrbird.febs.common.utils.FebsUtil;
+import cc.mrbird.febs.common.core.entity.FebsResponse;
+import cc.mrbird.febs.common.core.entity.QueryRequest;
+import cc.mrbird.febs.common.core.entity.constant.StringConstant;
+import cc.mrbird.febs.common.core.entity.system.Role;
+import cc.mrbird.febs.common.core.utils.FebsUtil;
+import cc.mrbird.febs.server.system.annotation.ControllerEndpoint;
 import cc.mrbird.febs.server.system.service.IRoleService;
-import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.wuwenze.poi.ExcelKit;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -20,16 +20,17 @@ import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author MrBird
+ */
 @Slf4j
 @Validated
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("role")
 public class RoleController {
 
-    @Autowired
-    private IRoleService roleService;
-
-    private String message;
+    private final IRoleService roleService;
 
     @GetMapping
     public FebsResponse roleList(QueryRequest queryRequest, Role role) {
@@ -60,7 +61,7 @@ public class RoleController {
     @PreAuthorize("hasAuthority('role:delete')")
     @ControllerEndpoint(operation = "删除角色", exceptionMessage = "删除角色失败")
     public void deleteRoles(@NotBlank(message = "{required}") @PathVariable String roleIds) {
-        String[] ids = roleIds.split(StringPool.COMMA);
+        String[] ids = roleIds.split(StringConstant.COMMA);
         this.roleService.deleteRoles(ids);
     }
 

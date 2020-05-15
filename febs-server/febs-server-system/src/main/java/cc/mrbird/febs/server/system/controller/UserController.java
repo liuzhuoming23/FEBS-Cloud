@@ -1,18 +1,19 @@
 package cc.mrbird.febs.server.system.controller;
 
-import cc.mrbird.febs.common.annotation.ControllerEndpoint;
-import cc.mrbird.febs.common.entity.FebsResponse;
-import cc.mrbird.febs.common.entity.QueryRequest;
-import cc.mrbird.febs.common.entity.system.LoginLog;
-import cc.mrbird.febs.common.entity.system.SystemUser;
-import cc.mrbird.febs.common.exception.FebsException;
-import cc.mrbird.febs.common.utils.FebsUtil;
+import cc.mrbird.febs.common.core.entity.FebsResponse;
+import cc.mrbird.febs.common.core.entity.QueryRequest;
+import cc.mrbird.febs.common.core.entity.constant.StringConstant;
+import cc.mrbird.febs.common.core.entity.system.LoginLog;
+import cc.mrbird.febs.common.core.entity.system.SystemUser;
+import cc.mrbird.febs.common.core.exception.FebsException;
+import cc.mrbird.febs.common.core.utils.FebsUtil;
+import cc.mrbird.febs.server.system.annotation.ControllerEndpoint;
 import cc.mrbird.febs.server.system.service.ILoginLogService;
+import cc.mrbird.febs.server.system.service.IUserDataPermissionService;
 import cc.mrbird.febs.server.system.service.IUserService;
-import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.wuwenze.poi.ExcelKit;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
@@ -32,15 +33,14 @@ import java.util.Map;
 @Slf4j
 @Validated
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("user")
 public class UserController {
 
-    @Autowired
-    private IUserService userService;
-    @Autowired
-    private ILoginLogService loginLogService;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final IUserService userService;
+    private final IUserDataPermissionService userDataPermissionService;
+    private final ILoginLogService loginLogService;
+    private final PasswordEncoder passwordEncoder;
 
     @GetMapping("success")
     public void loginSuccess(HttpServletRequest request) {
@@ -56,7 +56,7 @@ public class UserController {
 
     @GetMapping("index")
     public FebsResponse index() {
-        Map<String, Object> data = new HashMap<>();
+        Map<String, Object> data = new HashMap<>(5);
         // 获取系统访问记录
         Long totalVisitCount = loginLogService.findTotalVisitCount();
         data.put("totalVisitCount", totalVisitCount);
@@ -101,11 +101,18 @@ public class UserController {
         this.userService.updateUser(user);
     }
 
+    @GetMapping("/{userId}")
+    @PreAuthorize("hasAuthority('user:update')")
+    public FebsResponse findUserDataPermissions(@NotBlank(message = "{required}") @PathVariable String userId) {
+        String dataPermissions = this.userDataPermissionService.findByUserId(userId);
+        return new FebsResponse().data(dataPermissions);
+    }
+
     @DeleteMapping("/{userIds}")
     @PreAuthorize("hasAuthority('user:delete')")
     @ControllerEndpoint(operation = "删除用户", exceptionMessage = "删除用户失败")
     public void deleteUsers(@NotBlank(message = "{required}") @PathVariable String userIds) {
-        String[] ids = userIds.split(StringPool.COMMA);
+        String[] ids = userIds.split(StringConstant.COMMA);
         this.userService.deleteUsers(ids);
     }
 
@@ -138,7 +145,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('user:reset')")
     @ControllerEndpoint(exceptionMessage = "重置用户密码失败")
     public void resetPassword(@NotBlank(message = "{required}") String usernames) {
-        String[] usernameArr = usernames.split(StringPool.COMMA);
+        String[] usernameArr = usernames.split(StringConstant.COMMA);
         this.userService.resetPassword(usernameArr);
     }
 

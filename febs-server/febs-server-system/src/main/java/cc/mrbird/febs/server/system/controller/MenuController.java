@@ -1,15 +1,15 @@
 package cc.mrbird.febs.server.system.controller;
 
-import cc.mrbird.febs.common.annotation.ControllerEndpoint;
-import cc.mrbird.febs.common.entity.FebsResponse;
-import cc.mrbird.febs.common.entity.router.VueRouter;
-import cc.mrbird.febs.common.entity.system.Menu;
+import cc.mrbird.febs.common.core.entity.FebsResponse;
+import cc.mrbird.febs.common.core.entity.constant.StringConstant;
+import cc.mrbird.febs.common.core.entity.router.VueRouter;
+import cc.mrbird.febs.common.core.entity.system.Menu;
+import cc.mrbird.febs.server.system.annotation.ControllerEndpoint;
 import cc.mrbird.febs.server.system.service.IMenuService;
-import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.wuwenze.poi.ExcelKit;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -27,15 +27,15 @@ import java.util.Map;
 @Slf4j
 @Validated
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/menu")
 public class MenuController {
 
-    @Autowired
-    private IMenuService menuService;
+    private final IMenuService menuService;
 
     @GetMapping("/{username}")
     public FebsResponse getUserRouters(@NotBlank(message = "{required}") @PathVariable String username) {
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>(2);
         List<VueRouter<Menu>> userRouters = this.menuService.getUserRouters(username);
         String userPermissions = this.menuService.findUserPermissions(username);
         String[] permissionArray = new String[0];
@@ -69,7 +69,7 @@ public class MenuController {
     @PreAuthorize("hasAuthority('menu:delete')")
     @ControllerEndpoint(operation = "删除菜单/按钮", exceptionMessage = "删除菜单/按钮失败")
     public void deleteMenus(@NotBlank(message = "{required}") @PathVariable String menuIds) {
-        String[] ids = menuIds.split(StringPool.COMMA);
+        String[] ids = menuIds.split(StringConstant.COMMA);
         this.menuService.deleteMeuns(ids);
     }
 

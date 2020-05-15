@@ -6,23 +6,23 @@ import cc.mrbird.febs.auth.manager.UserManager;
 import cc.mrbird.febs.auth.properties.FebsAuthProperties;
 import cc.mrbird.febs.auth.service.SocialLoginService;
 import cc.mrbird.febs.auth.service.UserConnectionService;
-import cc.mrbird.febs.common.entity.FebsResponse;
-import cc.mrbird.febs.common.entity.constant.GrantTypeConstant;
-import cc.mrbird.febs.common.entity.constant.ParamsConstant;
-import cc.mrbird.febs.common.entity.constant.SocialConstant;
-import cc.mrbird.febs.common.entity.system.SystemUser;
-import cc.mrbird.febs.common.exception.FebsException;
-import cc.mrbird.febs.common.utils.FebsUtil;
-import cc.mrbird.febs.common.utils.HttpContextUtil;
+import cc.mrbird.febs.common.core.entity.FebsResponse;
+import cc.mrbird.febs.common.core.entity.constant.GrantTypeConstant;
+import cc.mrbird.febs.common.core.entity.constant.ParamsConstant;
+import cc.mrbird.febs.common.core.entity.constant.SocialConstant;
+import cc.mrbird.febs.common.core.entity.constant.StringConstant;
+import cc.mrbird.febs.common.core.entity.system.SystemUser;
+import cc.mrbird.febs.common.core.exception.FebsException;
+import cc.mrbird.febs.common.core.utils.FebsUtil;
 import cn.hutool.core.util.StrUtil;
 import com.xkcoding.justauth.AuthRequestFactory;
+import lombok.RequiredArgsConstructor;
 import me.zhyd.oauth.config.AuthSource;
 import me.zhyd.oauth.model.AuthCallback;
 import me.zhyd.oauth.model.AuthResponse;
 import me.zhyd.oauth.model.AuthUser;
 import me.zhyd.oauth.request.AuthRequest;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.ClientDetails;
@@ -39,6 +39,7 @@ import java.util.Map;
  * @author MrBird
  */
 @Service
+@RequiredArgsConstructor
 public class SocialLoginServiceImpl implements SocialLoginService {
 
     private static final String USERNAME = "username";
@@ -47,20 +48,13 @@ public class SocialLoginServiceImpl implements SocialLoginService {
     private static final String NOT_BIND = "not_bind";
     private static final String SOCIAL_LOGIN_SUCCESS = "social_login_success";
 
-    @Autowired
-    private UserManager userManager;
-    @Autowired
-    private AuthRequestFactory factory;
-    @Autowired
-    private FebsAuthProperties properties;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private UserConnectionService userConnectionService;
-    @Autowired
-    private ResourceOwnerPasswordTokenGranter granter;
-    @Autowired
-    private RedisClientDetailsService redisClientDetailsService;
+    private final UserManager userManager;
+    private final AuthRequestFactory factory;
+    private final FebsAuthProperties properties;
+    private final PasswordEncoder passwordEncoder;
+    private final UserConnectionService userConnectionService;
+    private final ResourceOwnerPasswordTokenGranter granter;
+    private final RedisClientDetailsService redisClientDetailsService;
 
     @Override
     public AuthRequest renderAuth(String oauthType) throws FebsException {
@@ -95,7 +89,7 @@ public class SocialLoginServiceImpl implements SocialLoginService {
                 if (user == null) {
                     throw new FebsException("系统中未找到与第三方账号对应的账户");
                 }
-                OAuth2AccessToken oAuth2AccessToken = getOAuth2AccessToken(user);
+                OAuth2AccessToken oAuth2AccessToken = getOauth2AccessToken(user);
                 febsResponse.message(SOCIAL_LOGIN_SUCCESS).data(oAuth2AccessToken);
                 febsResponse.put(USERNAME, user.getUsername());
             }
@@ -112,7 +106,7 @@ public class SocialLoginServiceImpl implements SocialLoginService {
             throw new FebsException("绑定系统账号失败，用户名或密码错误！");
         }
         this.createConnection(systemUser, authUser);
-        return this.getOAuth2AccessToken(systemUser);
+        return this.getOauth2AccessToken(systemUser);
     }
 
     @Override
@@ -124,7 +118,7 @@ public class SocialLoginServiceImpl implements SocialLoginService {
         String encryptPassword = passwordEncoder.encode(registUser.getBindPassword());
         SystemUser systemUser = this.userManager.registUser(registUser.getBindUsername(), encryptPassword);
         this.createConnection(systemUser, authUser);
-        return this.getOAuth2AccessToken(systemUser);
+        return this.getOauth2AccessToken(systemUser);
     }
 
     @Override
@@ -171,10 +165,11 @@ public class SocialLoginServiceImpl implements SocialLoginService {
     }
 
     private AuthCallback resolveAuthCallback(AuthCallback callback) {
+        int stateLength = 3;
         String state = callback.getState();
-        String[] strings = StringUtils.splitByWholeSeparatorPreserveAllTokens(state, "::");
-        if (strings.length == 3) {
-            callback.setState(strings[0] + "::" + strings[1]);
+        String[] strings = StringUtils.splitByWholeSeparatorPreserveAllTokens(state, StringConstant.DOUBLE_COLON);
+        if (strings.length == stateLength) {
+            callback.setState(strings[0] + StringConstant.DOUBLE_COLON + strings[1]);
         }
         return callback;
     }
@@ -192,8 +187,8 @@ public class SocialLoginServiceImpl implements SocialLoginService {
         return StringUtils.equalsIgnoreCase(username, currentUsername);
     }
 
-    private OAuth2AccessToken getOAuth2AccessToken(SystemUser user) throws FebsException {
-        final HttpServletRequest httpServletRequest = HttpContextUtil.getHttpServletRequest();
+    private OAuth2AccessToken getOauth2AccessToken(SystemUser user) throws FebsException {
+        final HttpServletRequest httpServletRequest = FebsUtil.getHttpServletRequest();
         httpServletRequest.setAttribute(ParamsConstant.LOGIN_TYPE, SocialConstant.SOCIAL_LOGIN);
         String socialLoginClientId = properties.getSocialLoginClientId();
         ClientDetails clientDetails = null;
@@ -210,7 +205,7 @@ public class SocialLoginServiceImpl implements SocialLoginService {
         requestParameters.put(USERNAME, user.getUsername());
         requestParameters.put(PASSWORD, SocialConstant.SOCIAL_LOGIN_PASSWORD);
 
-        String grantTypes = String.join(",", clientDetails.getAuthorizedGrantTypes());
+        String grantTypes = String.join(StringConstant.COMMA, clientDetails.getAuthorizedGrantTypes());
         TokenRequest tokenRequest = new TokenRequest(requestParameters, clientDetails.getClientId(), clientDetails.getScope(), grantTypes);
         return granter.grant(GrantTypeConstant.PASSWORD, tokenRequest);
     }
